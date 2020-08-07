@@ -81,9 +81,6 @@ $GATK_PATH/gatk AnalyzeCovariates \
          --after-report-file $OUTPUT_PATH/tumor_recal_pass2.table \
          --plots-report-file $OUTPUT_PATH/tumor_covariates.pdf > $OUTPUT_PATH/tumor_analyze_covariates.log 2>&1
 
-
-#java -Xmx48g -jar ${GATK_3.6} -T PrintReads -R ${Reference} -I ${folder}/${sample_name}.bwamem.marked.realigned.fixed.bam -BQSR ${folder}/${sample_name}.bwamem.marked.realigned.fixed.bam.recal_data.grp -o ${folder}/${sample_name}.bwamem.marked.realigned.fixed.recal.data.bam -nct 16 &&
-
 java -Xmx48g -jar $PICARD_PATH SortSam \
          I=$OUTPUT_PATH/tumor_marked.recal.pass1.bam \
          O=$OUTPUT_PATH/tumor_marked.recal.pass1.indexed.bam \
