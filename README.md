@@ -1,7 +1,7 @@
 # GATK_pipeline
 
 - GATK 4.1.8 version
-Call somatic short variants and generate a bamout with Mutect2
+- Call somatic short variants and generate a bamout with Mutect2
 ### Processing Steps
 
 #### 1. Lift genome positions
@@ -29,6 +29,8 @@ run_gatk.sh
 ***
 
 ### Reference Links
-[Mutect2](https://gatk.broadinstitute.org/hc/en-us/articles/360037593851-Mutect2)
-[LiftOver](https://genome.sph.umich.edu/wiki/LiftOver#Binary_liftOver_tool0)
-[BedToIntervalList (Picard)](https://gatk.broadinstitute.org/hc/en-us/articles/360036883931-BedToIntervalList-Picard-)
+- [Mutect2](https://gatk.broadinstitute.org/hc/en-us/articles/360037593851-Mutect2)
+
+- [LiftOver](https://genome.sph.umich.edu/wiki/LiftOver#Binary_liftOver_tool0)
+
+- [BedToIntervalList (Picard)](https://gatk.broadinstitute.org/hc/en-us/articles/360036883931-BedToIntervalList-Picard-)
