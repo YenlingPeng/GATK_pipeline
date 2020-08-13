@@ -17,5 +17,5 @@ REFERENCE_DICT="/project/GP1/reference/Homo_sapiens/GATK/hg38/Homo_sapiens_assem
 # Usage
 java -Xmx48g -jar $Picard BedToIntervalList \
                I=$INPUT_BED \
-               O=$OUTPUT/Panel_targets_EGFR_v1.interval_list \
+               O=$OUTPUT_PATH/Panel_targets_EGFR_v1.interval_list \
                SD=$REFERENCE_DICT
