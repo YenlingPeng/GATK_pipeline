@@ -20,4 +20,4 @@ OUTPUT_PATH="/work2/lynn88065/GATK/Inputs/20200721_GATK_pipeline"
 
 # Run liftOver:
 # unlifted.bed file will contain all genome positions that cannot be lifted
-$liftOver $INPUT_BED $CHAIN_FILE $OUTPUT_PATH/EGFR_v1.bed_hg38.bed_20200807 unlifted.bed
+$liftOver $INPUT_BED $CHAIN_FILE $OUTPUT_PATH/EGFR_v1_hg38.bed unlifted.bed
