@@ -29,7 +29,7 @@ GERMLINE_RESOURCE_FOR_PILEUP_PATH="/project/GP1/reference/Homo_sapiens/GATK/Mute
 NUM_THREAD=40                      
 Panel_Of_Normals="/project/GP1/u3710062/AI_SHARE/reference/GATK_bundle/2.8/hg38/somatic-hg38-1000g_pon.hg38.vcf.gz"
 
-bwa mem -t 16 -R $TUMOR_READGROUP \
+$BWA_PATH/bwa mem -t 16 -R $TUMOR_READGROUP \
         $REF_GENOME_PATH $TUMOR_FASTQ_1_PATH $TUMOR_FASTQ_2_PATH > $OUTPUT_PATH/tumor.sam &&
 
 java -Xmx48g -jar $PICARD_PATH SortSam \
