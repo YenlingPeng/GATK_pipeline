@@ -26,11 +26,18 @@ run_BedTolntervalList.sh
 run_gatk.sh
 ```
 
+### Annotation 
+liftover VCF from hg38 to hg19 & ANNOVAR
+
+```
+run_annotation.sh
+```
+
 ***
 
 ### Reference Links
-- [Mutect2](https://gatk.broadinstitute.org/hc/en-us/articles/360037593851-Mutect2)
-
 - [LiftOver](https://genome.sph.umich.edu/wiki/LiftOver#Binary_liftOver_tool0)
+
+- [Mutect2](https://gatk.broadinstitute.org/hc/en-us/articles/360037593851-Mutect2)
 
 - [BedToIntervalList (Picard)](https://gatk.broadinstitute.org/hc/en-us/articles/360036883931-BedToIntervalList-Picard-)
