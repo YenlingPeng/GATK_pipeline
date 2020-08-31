@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -q ntu192G
+#PBS -q ngs192G
 #PBS -l select=1:ncpus=5
 #PBS -P MST109178
 #PBS -W group_list=MST109178
