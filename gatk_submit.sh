@@ -14,12 +14,12 @@ clinical="GATK"
 disease="pipeline"
 sample_name="NA12878_S38_panel"
 OUTPUT_PATH="/work2/lynn88065/GATK/Outputs/${date}_${clinical}_${disease}/${sample_name}"
-SCRIPT_PATH=/work2/lynn88065/GATK/Inputs/${date}_${clinical}_${disease}/
+SCRIPT_PATH=/work2/lynn88065/GATK/Inputs/${date}_${clinical}_${disease}
 INPUT_PATH=/project/GP1/u3710062/AI_SHARE/Temp/20191018_DataToYL/
 
 $SCRIPT_PATH/run_gatk.sh $sample_name \
-        $INPUT_PAHT/NA12878-D702-D508_S38_L001_R1_001.fastq.gz \
-        $INPUT_PAHT/NA12878-D702-D508_S38_L001_R2_001.fastq.gz \
+        $INPUT_PATH/NA12878-D702-D508_S38_L001_R1_001.fastq.gz \
+        $INPUT_PATH/NA12878-D702-D508_S38_L001_R2_001.fastq.gz \
         "@RG\tID:${sample_name}\tLB:${sample_name}\tSM:${sample_name}\tPL:ILLUMINA" \
         $OUTPUT_PATH \
         /project/GP1/reference/Homo_sapiens/GATK/hg38/Homo_sapiens_assembly38.fasta \
