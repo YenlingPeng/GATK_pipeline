@@ -8,30 +8,24 @@
 UCSC provides binary liftOver tools to convert BED file from one genome assembly to another.
 > NOTE: Use the 'chr' before each chromosome name
 
-```
-liftoverbed.sh
-```
-
 #### 2. BedToIntervalList (Picard)
 Converts from BED to the Picard interval_list format.
 **This tool requires a sequence dictionary, provided with the SEQUENCE_DICTIONARY or SD argument.**
 
 ```
-run_BedTolntervalList.sh
+liftoverbed_IntervalList.sh
 ```
 
 ### Running pipeline
 
-```
-run_gatk.sh
-```
+The script for pipeline ```run_gatk.sh```
+Submit a Job: An example is available [here] (https://github.com/YenlingPeng/GATK_pipeline/blob/master/gatk_submit.sh)
 
 ### Annotation 
 liftover VCF from hg38 to hg19 & ANNOVAR
 
-```
-run_annotation.sh
-```
+The script for ANNOVAR ```run_annotation.sh```
+Submit a Job: An example is available [here] (https://github.com/YenlingPeng/GATK_pipeline/blob/master/annotation_submit.sh)
 
 ***
 
