@@ -1,39 +1,28 @@
 #!/bin/bash
-#PBS -q ntu192G
-#PBS -l select=1:ncpus=5
-#PBS -P MST109178
-#PBS -W group_list=MST109178
-#PBS -N gatk4.1
-#PBS -o /work2/lynn88065/GATK/Inputs/20200721_GATK_pipeline/gatk.out
-#PBS -e /work2/lynn88065/GATK/Inputs/20200721_GATK_pipeline/gatk.err
-#PBS -M s0890003@gmail.com
-#PBS -m e
 
-date="20200721"
-clinical="GATK"
-disease="pipeline"
-sample_name="NA12878_S38_panel"
-
-mkdir -p /work2/lynn88065/GATK/Outputs/${date}_${clinical}_${disease}/${sample_name}/
-BAIT="/work2/lynn88065/GATK/Inputs/${date}_${clinical}_${disease}/Panel_targets_EGFR_v1.interval_list"
-COVERED="/work2/lynn88065/GATK/Inputs/${date}_${clinical}_${disease}/Panel_targets_EGFR_v1.interval_list"
-
-# Mutect2
 GATK_PATH=/pkg/biology/GATK/GATK_v4.1.8.0
 PICARD_PATH=/pkg/biology/Picard/Picard_v2.18.11/picard.jar
 BWA_PATH=/pkg/biology/BWA/BWA_v0.7.17
 SAMTOOLS_PATH=/pkg/biology/SAMtools/SAMtools_v1.10/bin
 
-OUTPUT_PATH="/work2/lynn88065/GATK/Outputs/${date}_${clinical}_${disease}/${sample_name}"
-FASTQ_1_PATH="/project/GP1/u3710062/AI_SHARE/Temp/20191018_DataToYL/NA12878-D702-D508_S38_L001_R1_001.fastq.gz"
-FASTQ_2_PATH="/project/GP1/u3710062/AI_SHARE/Temp/20191018_DataToYL/NA12878-D702-D508_S38_L001_R2_001.fastq.gz"
-FASTQ_READGROUP='@RG\tID:${sample_name}\tLB:${sample_name}\tSM:${sample_name}\tPL:ILLUMINA\'
-REF_GENOME_PATH="/project/GP1/reference/Homo_sapiens/GATK/hg38/Homo_sapiens_assembly38.fasta"
-HUMAN_DBSNP_PATH="/project/GP1/reference/Homo_sapiens/GATK/hg38/dbsnp_146.hg38.vcf.gz"
-GERMLINE_RESOURCE_PATH="/project/GP1/reference/Homo_sapiens/GATK/Mutect2/af-only-gnomad.hg38.vcf.gz"
-GERMLINE_RESOURCE_FOR_PILEUP_PATH="/project/GP1/reference/Homo_sapiens/GATK/Mutect2/GetPileupSummaries/small_exac_common_3.hg38.vcf.gz"
+sample_name=$1
+FASTQ_1_PATH=$2
+FASTQ_2_PATH=$3
+FASTQ_READGROUP=$4
+OUTPUT_PATH=$5
+REF_GENOME_PATH=$6
+HUMAN_DBSNP_PATH=$7
+GERMLINE_RESOURCE_PATH=$8
+GERMLINE_RESOURCE_FOR_PILEUP_PATH=$9
+Panel_Of_Normals=$10
+BAIT=$11
+COVERED=$12
+
+# Ideally, you don't need to modify following lines
+
 NUM_THREAD=40                      
-Panel_Of_Normals="/project/GP1/u3710062/AI_SHARE/referenASDce/GATK_bundle/2.8/hg38/somatic-hg38-1000g_pon.hg38.vcf.gz"
+
+mkdir -p $OUTPUT_PATH
 
 # Mapping
 $BWA_PATH/bwa mem -t 16 -R $FASTQ_READGROUP \
@@ -132,3 +121,48 @@ $GATK_PATH/gatk VariantFiltration \
          --filter-name "LowQual" \
          --filter-expression "QD < 1.5" \
          --filter-name "LowQD"
+
+# Mutect2
+## get sample names that will be used for later in several command line calls 
+
+$GATK_PATH/gatk GetSampleName -I $OUTPUT_PATH/${sample_name}.bwamem.marked.recal.pass1.bam -O $OUTPUT_PATH/${sample_name}.sample_name.txt
+
+TUMOR_SAMPLE_NAME=$(cat $OUTPUT_PATH/${sample_name}.sample_name.txt)
+
+## Call somatic short variants and generate a BAM with Mutect2
+$GATK_PATH/gatk Mutect2 \
+        -R $REF_GENOME_PATH \
+        -I $OUTPUT_PATH/${sample_name}.bwamem.marked.recal.pass1.bam \
+        -tumor $TUMOR_SAMPLE_NAME \
+        --germline-resource $GERMLINE_RESOURCE_PATH \
+        --f1r2-tar-gz $OUTPUT_PATH/f1r2.tar.gz \
+        -pon $Panel_Of_Normals \
+        -O $OUTPUT_PATH/${sample_name}.bwamem.mutect2.vcf.gz \
+        -bamout $OUTPUT_PATH/${sample_name}.bwamem.marked.recal.pass1.mutect2.bam \
+        --native-pair-hmm-threads $NUM_THREAD > $OUTPUT_PATH/mutect2.log 2>&1 
+        
+$GATK_PATH/gatk LearnReadOrientationModel \
+        -I $OUTPUT_PATH/f1r2.tar.gz \
+        -O $OUTPUT_PATH/read-orientation-model.tar.gz\
+
+# Calculating Contamination        
+$GATK_PATH/gatk GetPileupSummaries \
+        -I $OUTPUT_PATH/${sample_name}.bwamem.marked.recal.pass1.bam \
+        -V $GERMLINE_RESOURCE_FOR_PILEUP_PATH \
+        -L $GERMLINE_RESOURCE_FOR_PILEUP_PATH \
+        -O $OUTPUT_PATH/getpileupsummaries.table > $OUTPUT_PATH/get_pileup_summaries.log 2>&1
+
+$GATK_PATH/gatk CalculateContamination \
+        -I $OUTPUT_PATH/getpileupsummaries.table \
+        -tumor-segmentation $OUTPUT_PATH/${sample_name}.segments.table \
+        -O $OUTPUT_PATH/contamination.table > $OUTPUT_PATH/calculate.contamination.log 2>&1
+
+# FilterMutectCalls
+$GATK_PATH/gatk FilterMutectCalls \
+        -R $REF_GENOME_PATH \
+        -V $OUTPUT_PATH/${sample_name}.bwamem.mutect2.vcf.gz \
+        --tumor-segmentation $OUTPUT_PATH/${sample_name}.segments.table \
+        --contamination-table $OUTPUT_PATH/contamination.table \
+        --ob-priors $OUTPUT_PATH/read-orientation-model.tar.gz \
+        -O $OUTPUT_PATH/${sample_name}.bwamem.mutect2.filtered.vcf > $OUTPUT_PATH/filter.mutect.calls.log 2>&1
+
