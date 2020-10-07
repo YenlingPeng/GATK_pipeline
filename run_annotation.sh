@@ -37,6 +37,6 @@ $ANNOVAR ${SAMPLE_ID}_hg19.norm.vcf $humandb -buildver hg19 -out ${SAMPLE_ID} \
         -remove -protocol refGene,TaiwanBiobank-official,TaiwanBiobank993WGS,avsnp150,exac03,exac03nonpsych,clinvar_20190305,gnomad211_exome,gnomad211_genome,cosmic_coding_GRCh37_v91,cosmic_noncoding_GRCh37_v91 -operation gx,f,f,f,f,f,f,f,f,f,f -nastring . -vcfinput -polish
 
 # Filtration records (exonic/splicing)
-head -n 1 ANNOVAR_${SAMPLE_ID}.hg19_multianno.txt > ${SAMPLE_ID}.filtered.annotation.txt
+head -n 1 ${SAMPLE_ID}.hg19_multianno.txt > ${SAMPLE_ID}.filtered.annotation.txt
 grep -e "exonic" -e "splicing" ${SAMPLE_ID}.hg19_multianno.txt >> ${SAMPLE_ID}.filtered.annotation.txt
 
